@@ -33,11 +33,11 @@ app.configure(
     }
   })
 )
+app.configure(queue);
 app.configure(postgresql)
 app.configure(authentication)
 app.configure(services)
 app.configure(channels)
-app.configure(queue);
 
 // Register hooks that run on all service methods
 app.hooks({
