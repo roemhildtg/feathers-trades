@@ -1,6 +1,7 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Container, Divider } from '@hope-ui/solid';
 import { A, Route, Routes, useNavigate } from '@solidjs/router';
 import { Component, createSignal, lazy, onMount, Show } from 'solid-js';
+import Nav from './components/Nav';
 import Login from './routes/Login';
 import { client } from './services/feathers';
 
@@ -24,19 +25,7 @@ const App: Component = () => {
     <>
       <Container>
 
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" as={A}>Home</BreadcrumbLink>
-            <BreadcrumbSeparator />
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">Docs</BreadcrumbLink>
-            <BreadcrumbSeparator />
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink currentPage>Breadcrumb</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
+        <Nav></Nav>
 
         <Divider></Divider>
 
