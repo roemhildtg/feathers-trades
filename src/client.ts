@@ -1,11 +1,14 @@
-import { feathers } from '@feathersjs/feathers'
+import { Application, feathers } from '@feathersjs/feathers'
 import type { TransportConnection, Params } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
+import type { Items, ItemsData, ItemsQuery, ItemsService } from './services/items/items'
+export type { Items, ItemsData, ItemsQuery }
+
+import type { Files, FilesData, FilesQuery, FilesService } from './services/files/files'
+export type { Files, FilesData, FilesQuery }
+
 import type { Jobs, JobsData, JobsQuery, JobsService } from './services/jobs/jobs'
 export type { Jobs, JobsData, JobsQuery }
-
-import type { Tasks, TasksData, TasksQuery, TasksService } from './services/tasks/tasks'
-export type { Tasks, TasksData, TasksQuery }
 
 import type { AuthenticationService } from '@feathersjs/authentication'
 
@@ -17,15 +20,19 @@ import type { AuthenticationClientOptions } from '@feathersjs/authentication-cli
 const userServiceMethods = ['find', 'get', 'create', 'update', 'patch', 'remove'] as const
 type UserClientService = Pick<UserService<Params<UserQuery>>, typeof userServiceMethods[number]>
 
-const tasksServiceMethods = ['find', 'get', 'create', 'update', 'patch', 'remove'] as const
-type TasksClientService = Pick<TasksService<Params<TasksQuery>>, typeof tasksServiceMethods[number]>
-
-const jobsServiceMethods = ['find', 'get', 'create', 'update', 'patch', 'remove'] as const
+const jobsServiceMethods = ['get', 'create'] as const
 type JobsClientService = Pick<JobsService, typeof jobsServiceMethods[number]>
 
+const filesServiceMethods = ['find', 'get', 'create', 'update', 'patch', 'remove'] as const
+type FilesClientService = Pick<FilesService, typeof filesServiceMethods[number]>
+
+const itemsServiceMethods = ['find', 'get', 'create', 'update', 'patch', 'remove'] as const
+type ItemsClientService = Pick<ItemsService<Params<ItemsQuery>>, typeof itemsServiceMethods[number]>
+
 export interface ServiceTypes {
+  items: ItemsClientService
+  files: FilesClientService
   jobs: JobsClientService
-  tasks: TasksClientService
   authentication: Pick<AuthenticationService, 'create' | 'remove'>
   users: UserClientService
   //
@@ -42,7 +49,7 @@ export interface ServiceTypes {
 export const createClient = <Configuration = any>(
   connection: TransportConnection<ServiceTypes>,
   authenticationOptions: Partial<AuthenticationClientOptions> = {}
-) => {
+): Application<ServiceTypes, Configuration> => {
   const client = feathers<ServiceTypes, Configuration>()
 
   client.configure(connection)
@@ -51,11 +58,14 @@ export const createClient = <Configuration = any>(
   client.use('users', connection.service('users'), {
     methods: userServiceMethods
   })
-  client.use('tasks', connection.service('tasks'), {
-    methods: tasksServiceMethods
-  })
   client.use('jobs', connection.service('jobs'), {
     methods: jobsServiceMethods
+  })
+  client.use('files', connection.service('files'), {
+    methods: filesServiceMethods
+  })
+  client.use('items', connection.service('items'), {
+    methods: itemsServiceMethods
   })
   return client
 }
